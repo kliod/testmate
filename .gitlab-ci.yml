@@ -1,0 +1,29 @@
+stages:
+  - quality
+
+variables:
+  AI_MODEL: "gpt-4o"
+  # OPENAI_API_KEY should be set in GitLab CI/CD Variables (Settings > CI/CD > Variables)
+
+testmate-quality-gate:
+  stage: quality
+  image: node:20-slim
+  script:
+    - echo "🚀 Running TestMate Quality Gate for Merge Request..."
+    - |
+      if [ -n "$CI_MERGE_REQUEST_IID" ]; then
+        # MR Pipeline
+        node scripts/testmate.mjs tier-2-impact --base-branch=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+      else
+        # Branch/Push Pipeline (Default to Tier 1)
+        node scripts/testmate.mjs tier-1-targeted --base-branch=origin/main
+      fi
+  artifacts:
+    when: always
+    paths:
+      - logs/
+    expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG

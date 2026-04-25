@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Quality Gate Output",
+  "type": "object",
+  "required": [
+    "status",
+    "mode",
+    "riskLevel",
+    "changeType",
+    "affectedAreas",
+    "subagentsRun",
+    "blockers",
+    "warnings",
+    "summary"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "PASS",
+        "WARNING",
+        "BLOCK"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "pre_commit",
+        "pre_mr",
+        "pre_merge",
+        "pre_release"
+      ]
+    },
+    "riskLevel": {
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "changeType": {
+      "type": "string"
+    },
+    "affectedAreas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "subagentsRun": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requiredCoverage": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "existingCoverage": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "missingCoverage": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "recommendedTests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "commandsToRun": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "manualQA": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "residualRisks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "string"
+    }
+  }
+}

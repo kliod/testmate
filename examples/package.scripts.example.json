@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "quality:precommit": "npm run lint --if-present && npm run test:unit --if-present",
+    "quality:mr": "npm run lint --if-present && npm run typecheck --if-present && npm run test:unit --if-present",
+    "quality:release": "npm run quality:mr && npm run test:e2e:critical --if-present",
+    "test:unit": "vitest run",
+    "test:affected": "vitest run --related $(git diff --name-only origin/main)",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:critical": "playwright test --grep @critical",
+    "test:visual": "playwright test --grep @visual"
+  }
+}
