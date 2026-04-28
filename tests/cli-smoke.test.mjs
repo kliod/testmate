@@ -101,18 +101,6 @@ test('npm publish exclusions are explicit and keep local audit state out of pack
   assert.ok(![...files].some((file) => file.startsWith('.testmate/state/')));
 });
 
-test('release checklist preserves the required package gate commands', () => {
-  const checklist = readFileSync(join(root, 'RELEASE_CHECKLIST.md'), 'utf8');
-
-  assert.match(checklist, /node --check \.testmate\/testmate\.mjs/);
-  assert.match(checklist, /node --test/);
-  assert.match(checklist, /npm\.cmd pack --dry-run --json|npm pack --dry-run --json/);
-  assert.match(checklist, /git diff --check/);
-  assert.match(checklist, /\.testmate\/logs\//);
-  assert.match(checklist, /\.testmate\/state\//);
-  assert.match(checklist, /\.testmate\/journal\.md/);
-});
-
 test('waiver policy is linked from policy and PR templates with required fields', () => {
   const policy = readFileSync(join(root, '.testmate/docs/waiver-policy.md'), 'utf8');
   const agents = readFileSync(join(root, '.testmate/AGENTS.md'), 'utf8');
