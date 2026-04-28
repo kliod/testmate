@@ -1,0 +1,21 @@
+{
+  "name": "docs-only",
+  "description": "Low-risk documentation updates should stay small and quiet.",
+  "mode": "tier-1-targeted",
+  "changedFiles": [
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/setup.md"
+    }
+  ],
+  "repositoryFiles": [
+    "README.md",
+    "docs/setup.md",
+    "tests/cli-smoke.test.mjs"
+  ],
+  "diff": "diff --git a/README.md b/README.md\nindex 1111111..2222222 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,2 +1,3 @@\n # TestMate\n+Updated installation wording.\n \n\ndiff --git a/docs/setup.md b/docs/setup.md\nindex 3333333..4444444 100644\n--- a/docs/setup.md\n+++ b/docs/setup.md\n@@ -10,3 +10,4 @@ Setup\n Existing text.\n+More setup detail.\n"
+}

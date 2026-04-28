@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "description": "Unified AI-native Web Testing Orchestrator",
   "type": "module",
-  "main": "scripts/testmate.mjs",
+  "main": ".testmate/testmate.mjs",
+  "bin": {
+    "testmate": ".testmate/testmate.mjs"
+  },
   "scripts": {
-    "testmate:targeted": "node scripts/testmate.mjs tier-1-targeted",
-    "testmate:integrity": "node scripts/testmate.mjs tier-2-impact",
-    "testmate:stability": "node scripts/testmate.mjs tier-3-full"
+    "test": "node --test",
+    "test:unit": "node --test",
+    "testmate:targeted": "node .testmate/testmate.mjs tier-1-targeted",
+    "testmate:integrity": "node .testmate/testmate.mjs tier-2-impact",
+    "testmate:stability": "node .testmate/testmate.mjs tier-3-full"
   },
   "keywords": [
     "testing",

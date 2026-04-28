@@ -1,0 +1,65 @@
+{
+  "fixtures": {
+    "docs-only": {
+      "expectSliced": false,
+      "maxCandidateAgents": 0,
+      "minimumRiskLevel": "LOW",
+      "note": "Docs-only changes should stay quiet. Zero prompt reduction is acceptable when the diff is already small."
+    },
+    "runtime-package": {
+      "expectSliced": true,
+      "minDiffReductionPercent": 50,
+      "minPromptReductionPercent": 3,
+      "requiredAgents": [
+        "Change Impact Analyst",
+        "Test Strategy Agent",
+        "Discovery Agent",
+        "Security Agent"
+      ],
+      "note": "Runtime/package changes should route through config-aware agents and show measurable slicing."
+    },
+    "auth-guard": {
+      "expectSliced": false,
+      "minimumRiskLevel": "HIGH",
+      "requiredAgents": [
+        "Auth & Permission Agent",
+        "Security Agent"
+      ],
+      "note": "Auth changes can stay unsliced when the diff is small, but routing and risk escalation must stay sharp."
+    },
+    "api-mutation": {
+      "expectSliced": false,
+      "minimumRiskLevel": "HIGH",
+      "requiredAgents": [
+        "API Mock & Contract Agent",
+        "Integration Test Agent",
+        "Data Fetching & Cache Agent",
+        "Security Agent"
+      ],
+      "note": "Mutation scenarios should route through API, integration, and cache agents even without slicing."
+    },
+    "release-relocation": {
+      "expectSliced": true,
+      "minDiffReductionPercent": 60,
+      "minPromptReductionPercent": 5,
+      "requiredAgents": [
+        "Change Impact Analyst",
+        "Test Strategy Agent",
+        "Discovery Agent",
+        "Security Agent"
+      ],
+      "note": "Large release-style diffs should show strong deterministic slicing before any LLM call."
+    },
+    "mirrored-tests": {
+      "expectSliced": false,
+      "minimumRiskLevel": "MEDIUM",
+      "requiredAgents": [
+        "Component Test Agent",
+        "Integration Test Agent",
+        "Change Impact Analyst",
+        "Test Strategy Agent"
+      ],
+      "note": "Mirrored src-to-tests layouts should still produce related test matches across tests/ and __tests__ roots."
+    }
+  }
+}

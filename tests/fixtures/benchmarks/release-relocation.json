@@ -1,0 +1,36 @@
+{
+  "name": "release-relocation",
+  "description": "Large release-style relocation should show strong prompt reduction from diff slicing.",
+  "mode": "tier-3-full",
+  "changedFiles": [
+    {
+      "status": "M",
+      "path": ".github/workflows/quality-gate.yml"
+    },
+    {
+      "status": "M",
+      "path": ".gitlab-ci.yml"
+    },
+    {
+      "status": "M",
+      "path": "package.json"
+    },
+    {
+      "status": "D",
+      "path": "scripts/testmate.mjs"
+    },
+    {
+      "status": "M",
+      "path": ".testmate/testmate.mjs"
+    }
+  ],
+  "repositoryFiles": [
+    ".github/workflows/quality-gate.yml",
+    ".gitlab-ci.yml",
+    "package.json",
+    ".testmate/testmate.mjs",
+    "tests/cli-smoke.test.mjs"
+  ],
+  "maxPromptDiffChars": 900,
+  "diff": "diff --git a/.github/workflows/quality-gate.yml b/.github/workflows/quality-gate.yml\nindex 1111111..2222222 100644\n--- a/.github/workflows/quality-gate.yml\n+++ b/.github/workflows/quality-gate.yml\n@@ -1,4 +1,4 @@\n-run: node scripts/testmate.mjs tier-2-impact\n+run: node .testmate/testmate.mjs tier-2-impact\n\ndiff --git a/.gitlab-ci.yml b/.gitlab-ci.yml\nindex 3333333..4444444 100644\n--- a/.gitlab-ci.yml\n+++ b/.gitlab-ci.yml\n@@ -1,4 +1,4 @@\n-  - node scripts/testmate.mjs tier-1-targeted\n+  - node .testmate/testmate.mjs tier-1-targeted\n\ndiff --git a/package.json b/package.json\nindex 5555555..6666666 100644\n--- a/package.json\n+++ b/package.json\n@@ -1,6 +1,6 @@\n-  \"main\": \"scripts/testmate.mjs\",\n+  \"main\": \".testmate/testmate.mjs\",\n\ndiff --git a/scripts/testmate.mjs b/scripts/testmate.mjs\ndeleted file mode 100644\nindex 7777777..0000000\n--- a/scripts/testmate.mjs\n+++ /dev/null\n@@ -1,12 +0,0 @@\n-const deleted01 = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';\n-const deleted02 = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';\n-const deleted03 = 'cccccccccccccccccccccccccccccccccccccccccccccccccc';\n-const deleted04 = 'dddddddddddddddddddddddddddddddddddddddddddddddddd';\n-const deleted05 = 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';\n-const deleted06 = 'ffffffffffffffffffffffffffffffffffffffffffffffffff';\n-const deleted07 = 'gggggggggggggggggggggggggggggggggggggggggggggggggg';\n-const deleted08 = 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh';\n-const deleted09 = 'iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii';\n-const deleted10 = 'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj';\n-const deleted11 = 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk';\n-const deleted12 = 'llllllllllllllllllllllllllllllllllllllllllllllllll';\n\ndiff --git a/.testmate/testmate.mjs b/.testmate/testmate.mjs\nindex 8888888..9999999 100644\n--- a/.testmate/testmate.mjs\n+++ b/.testmate/testmate.mjs\n@@ -1,3 +1,15 @@\n const moved = true;\n+const release01 = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';\n+const release02 = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';\n+const release03 = 'cccccccccccccccccccccccccccccccccccccccccccccccccc';\n+const release04 = 'dddddddddddddddddddddddddddddddddddddddddddddddddd';\n+const release05 = 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';\n+const release06 = 'ffffffffffffffffffffffffffffffffffffffffffffffffff';\n+const release07 = 'gggggggggggggggggggggggggggggggggggggggggggggggggg';\n+const release08 = 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh';\n+const release09 = 'iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii';\n+const release10 = 'jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj';\n+const release11 = 'kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk';\n+const release12 = 'llllllllllllllllllllllllllllllllllllllllllllllllll';\n"
+}

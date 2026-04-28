@@ -1,0 +1,21 @@
+{
+  "name": "auth-guard",
+  "description": "Auth and permission updates should trigger auth/security routing.",
+  "mode": "tier-2-impact",
+  "changedFiles": [
+    {
+      "status": "M",
+      "path": "src/auth/RoleGuard.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/auth/RoleGuard.test.tsx"
+    }
+  ],
+  "repositoryFiles": [
+    "src/auth/RoleGuard.tsx",
+    "src/auth/RoleGuard.test.tsx",
+    "src/routes/AdminPage.tsx"
+  ],
+  "diff": "diff --git a/src/auth/RoleGuard.tsx b/src/auth/RoleGuard.tsx\nindex 1111111..2222222 100644\n--- a/src/auth/RoleGuard.tsx\n+++ b/src/auth/RoleGuard.tsx\n@@ -1,4 +1,7 @@\n export function RoleGuard(user) {\n+  if (!user) return 'unauthorized';\n+  if (!user.roles.includes('ADMIN')) return 'forbidden';\n   return 'allowed';\n }\n\ndiff --git a/src/auth/RoleGuard.test.tsx b/src/auth/RoleGuard.test.tsx\nindex 3333333..4444444 100644\n--- a/src/auth/RoleGuard.test.tsx\n+++ b/src/auth/RoleGuard.test.tsx\n@@ -1,3 +1,6 @@\n test('allows admin', () => {});\n+test('blocks guest', () => {});\n+test('returns unauthorized without user', () => {});\n"
+}
