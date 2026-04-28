@@ -1,0 +1,24 @@
+{
+  "name": "mirrored-tests",
+  "description": "Source files should map to mirrored tests roots and nested __tests__ folders.",
+  "mode": "tier-2-impact",
+  "changedFiles": [
+    {
+      "status": "M",
+      "path": "src/features/billing/InvoiceTable.tsx"
+    },
+    {
+      "status": "M",
+      "path": "src/features/billing/use-invoices-query.ts"
+    }
+  ],
+  "repositoryFiles": [
+    "src/features/billing/InvoiceTable.tsx",
+    "src/features/billing/use-invoices-query.ts",
+    "tests/features/billing/InvoiceTable.test.tsx",
+    "tests/features/billing/use-invoices-query.test.ts",
+    "src/features/billing/__tests__/InvoiceTable.spec.tsx",
+    "src/features/billing/__tests__/use-invoices-query.spec.ts"
+  ],
+  "diff": "diff --git a/src/features/billing/InvoiceTable.tsx b/src/features/billing/InvoiceTable.tsx\nindex 1111111..2222222 100644\n--- a/src/features/billing/InvoiceTable.tsx\n+++ b/src/features/billing/InvoiceTable.tsx\n@@ -1,3 +1,4 @@\n export function InvoiceTable() {\n+  return 'updated';\n }\n\ndiff --git a/src/features/billing/use-invoices-query.ts b/src/features/billing/use-invoices-query.ts\nindex 3333333..4444444 100644\n--- a/src/features/billing/use-invoices-query.ts\n+++ b/src/features/billing/use-invoices-query.ts\n@@ -1,3 +1,4 @@\n export function useInvoicesQuery() {\n+  return ['invoice'];\n }\n"
+}

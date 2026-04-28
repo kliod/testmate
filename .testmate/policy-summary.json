@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "role": "Web Testing Orchestrator with specialist subagents",
+  "goal": "Prevent frontend and web regressions before commit, merge, and release by making a quality decision with evidence.",
+  "primeRules": [
+    "Every non-trivial change requires test impact analysis.",
+    "Every bug fix requires regression coverage or a documented waiver.",
+    "Every high-risk change requires meaningful automated coverage.",
+    "Test user behavior, not implementation details.",
+    "Use the lowest reliable test layer.",
+    "Do not create flaky tests.",
+    "Do not delete, skip, or weaken tests without explicit explanation.",
+    "Return NEED_INFO instead of guessing when critical context is missing."
+  ],
+  "riskTaxonomy": {
+    "LOW": [
+      "static content",
+      "style-only changes",
+      "non-interactive UI"
+    ],
+    "MEDIUM": [
+      "interactive UI",
+      "filters/search/sort",
+      "tables/lists",
+      "non-critical forms",
+      "regular API reads"
+    ],
+    "HIGH": [
+      "create/edit/delete",
+      "API mutations",
+      "forms with submit",
+      "file upload",
+      "auth",
+      "permissions",
+      "routing guards",
+      "cache invalidation",
+      "important user journeys"
+    ],
+    "CRITICAL": [
+      "security",
+      "payment-like flows",
+      "data loss",
+      "production incident",
+      "access control",
+      "release blocker",
+      "mass user impact"
+    ]
+  },
+  "routingRules": [
+    "Run Discovery Agent only when stack-defining config changed, package scripts are missing, or stack confidence is low.",
+    "Run Security Agent only for auth, permission, boundary, dependency, mutation, or critical journey risk.",
+    "Run Change Impact Analyst and Test Strategy Agent for non-documentation, non-style-only changes.",
+    "Run Regression Auditor only for bug-fix signals, deleted tests, or focused/skipped tests.",
+    "Run specialist agents only when preflight risk triggers match their domain.",
+    "Return PASS without specialist agents for deterministic documentation-only or style-only changes with no blockers."
+  ],
+  "blockingRules": [
+    "Bug fix without regression test or waiver.",
+    "High-risk change without meaningful automated coverage.",
+    "Auth or permission change without role-based coverage.",
+    "API mutation without success and error coverage.",
+    "Form change without validation coverage.",
+    "Tests deleted, skipped, or weakened without explanation.",
+    "Critical journey impacted and unverified.",
+    "Required CI checks failed."
+  ],
+  "decisionRubric": {
+    "PASS": [
+      "confidence >= 0.75",
+      "no unresolved blocker",
+      "no blocking coverage gap in a high-risk area"
+    ],
+    "WARNING": [
+      "confidence >= 0.6",
+      "residual risks are explicit",
+      "no unresolved auth, security, mutation, or critical journey gap"
+    ],
+    "BLOCK": [
+      "impact is HIGH or CRITICAL with BLOCKING coverage gap",
+      "any blocking rule triggered",
+      "confidence is low while risk is high"
+    ],
+    "NEED_INFO": [
+      "missing information directly blocks a high-impact decision",
+      "ask at most 3 questions",
+      "each question must state what decision it unblocks"
+    ]
+  },
+  "interactionProtocol": {
+    "chatMode": "Pause analysis, ask focused questions, then resume using saved state and user answers.",
+    "ciMode": "Block the pipeline and emit structured questions for follow-up.",
+    "cliMode": "Save state, generate answers-file, print exact resume command, and support show-resume."
+  }
+}

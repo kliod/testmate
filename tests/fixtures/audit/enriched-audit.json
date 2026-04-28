@@ -1,0 +1,160 @@
+{
+  "parsedData": {
+    "status": "WARNING",
+    "mode": "pre_mr",
+    "analysisScope": "AFFECTED",
+    "riskLevel": "HIGH",
+    "changeType": "Auth guard routing update",
+    "decisionFactors": {
+      "impact": "HIGH",
+      "likelihood": 0.45,
+      "confidence": 0.84,
+      "coverageGap": "MATERIAL",
+      "businessCriticality": "HIGH"
+    },
+    "findings": [
+      {
+        "severity": "WARNING",
+        "agent": "Auth & Permission Agent",
+        "file": "src/auth/RoleGuard.tsx",
+        "evidence": "Role fallback behavior changed without explicit negative-path coverage.",
+        "confidence": 0.78,
+        "recommendedAction": "Add a regression test for unauthorized access and fallback rendering."
+      }
+    ],
+    "affectedAreas": [
+      "auth",
+      "routing guards"
+    ],
+    "subagentsRun": [
+      "Auth & Permission Agent",
+      "Security Agent",
+      "Change Impact Analyst"
+    ],
+    "skippedAgents": [
+      {
+        "agent": "E2E Test Agent",
+        "reason": "No multi-page critical journey changed in this fixture."
+      }
+    ],
+    "requiredCoverage": [
+      "Unauthorized role regression coverage"
+    ],
+    "existingCoverage": [
+      "Existing component tests for allowed role rendering"
+    ],
+    "missingCoverage": [
+      "Explicit denied-role coverage"
+    ],
+    "blockers": [],
+    "warnings": [
+      "Auth guard behavior changed without denied-role regression coverage."
+    ],
+    "recommendedTests": [
+      "Add RoleGuard denied-role regression test"
+    ],
+    "commandsToRun": [
+      "node --test"
+    ],
+    "manualQA": [
+      "Verify denied-role navigation fallback in staging."
+    ],
+    "residualRisks": [
+      "Unauthorized fallback may drift if route metadata changes."
+    ],
+    "questionsForUser": [],
+    "interaction": {
+      "state": "complete",
+      "blockedDecision": "",
+      "resumeToken": "",
+      "answersExpected": [],
+      "receivedAnswers": []
+    },
+    "metrics": {
+      "runtimeMs": 1120,
+      "selectedAgents": 3,
+      "changedFiles": 2,
+      "model": "gpt-4o",
+      "promptChars": 17340,
+      "responseChars": 4210,
+      "retryCount": 1,
+      "diffSliced": true,
+      "diffOriginalChars": 2140,
+      "diffSelectedChars": 930,
+      "diffOmittedFiles": 1,
+      "versioning": {
+        "policyHash": "sha256:policy",
+        "policySummaryHash": "sha256:policy-summary",
+        "agentCardsHash": "sha256:agent-cards",
+        "selectedAgentCardsHash": "sha256:selected-agent-cards",
+        "tierPromptHash": "sha256:tier-prompt",
+        "orchestratorHash": "sha256:orchestrator",
+        "diffHash": "sha256:diff"
+      }
+    },
+    "auditLogPath": ".testmate/logs/pre_mr_fixture.md",
+    "summary": "Coverage is close, but auth guard fallback still needs one targeted regression test."
+  },
+  "preflight": {
+    "changeType": "auth",
+    "docsOnly": false,
+    "styleOnly": false,
+    "configChanged": false,
+    "fileExtensions": [
+      ".tsx",
+      ".test.tsx"
+    ],
+    "changedFiles": [
+      {
+        "status": "M",
+        "path": "src/auth/RoleGuard.tsx"
+      },
+      {
+        "status": "M",
+        "path": "src/auth/RoleGuard.test.tsx"
+      }
+    ],
+    "changedFileCount": 2,
+    "testFilesChanged": [
+      "src/auth/RoleGuard.test.tsx"
+    ],
+    "relatedTests": [
+      {
+        "source": "src/auth/RoleGuard.tsx",
+        "relatedTests": [
+          "src/auth/RoleGuard.test.tsx"
+        ]
+      }
+    ],
+    "riskTriggers": [
+      "auth-permissions",
+      "component-ui"
+    ],
+    "candidateAgents": [
+      "Auth & Permission Agent",
+      "Security Agent",
+      "Component Test Agent",
+      "Change Impact Analyst"
+    ],
+    "skippedAgents": [
+      {
+        "agent": "E2E Test Agent",
+        "reason": "No multi-page critical journey changed in this fixture."
+      }
+    ],
+    "riskLevelHint": "CRITICAL",
+    "deterministicBlockers": [],
+    "packageScripts": [
+      "test"
+    ],
+    "preflightConfidence": 0.84,
+    "decisionFactors": {
+      "impact": "HIGH",
+      "likelihood": 0.45,
+      "confidence": 0.84,
+      "coverageGap": "MATERIAL",
+      "businessCriticality": "HIGH"
+    }
+  },
+  "markdownAudit": "## Findings\n- Add denied-role regression coverage before merge."
+}
