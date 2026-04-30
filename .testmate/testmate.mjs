@@ -7,7 +7,7 @@
 
 import { createHash } from 'node:crypto';
 import { execSync, execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -290,6 +290,19 @@ function readPackageScripts() {
 
 function readPolicySummary() {
     return readJson(path.join(__dirname, 'policy-summary.json'), {});
+}
+
+function promptFileForMode(modeName) {
+    const promptFiles = {
+        pre_commit: 'pre-commit.md',
+        pre_mr: 'pre-mr.md',
+        pre_merge: 'pre-merge.md',
+        pre_release: 'pre-release.md',
+        'tier-1-targeted': 'tier-1-targeted.md',
+        'tier-2-impact': 'tier-2-impact.md',
+        'tier-3-full': 'tier-3-full.md'
+    };
+    return promptFiles[modeName] || `${modeName}.md`;
 }
 
 function readAgentCards() {
@@ -791,6 +804,15 @@ function normalizeInteraction(parsedData) {
 }
 
 async function executeLLM(requestPayload) {
+    if (process.env.TESTMATE_MOCK_OPENAI_RESPONSE) {
+        const data = JSON.parse(process.env.TESTMATE_MOCK_OPENAI_RESPONSE);
+        const responseText = data?.choices?.[0]?.message?.content;
+        if (!responseText) {
+            throw new Error('Mock OpenAI response did not include choices[0].message.content.');
+        }
+        return responseText;
+    }
+
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -1062,14 +1084,10 @@ function buildFreshPayload(context) {
 
 function readBenchmarkFixtures(fixturesPath) {
     const resolved = path.resolve(rootDir, fixturesPath);
-    const entries = execFileSync('powershell', [
-        '-NoProfile',
-        '-Command',
-        `Get-ChildItem -LiteralPath '${resolved.replace(/'/g, "''")}' -Filter *.json | Select-Object -ExpandProperty FullName`
-    ], { encoding: 'utf8' })
-        .split(/\r?\n/)
-        .map((line) => line.trim())
-        .filter(Boolean);
+    const entries = readdirSync(resolved, { withFileTypes: true })
+        .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
+        .map((entry) => path.join(resolved, entry.name))
+        .sort();
 
     return entries.map((filePath) => ({
         filePath,
@@ -1180,7 +1198,7 @@ function runBenchmarkFixtures(fixturesPath) {
         const changedFiles = data.changedFiles || [];
         const diff = data.diff || '';
         const modeForFixture = data.mode || 'tier-1-targeted';
-        const promptContent = readFileSync(path.join(__dirname, `prompts/${modeForFixture}.md`), 'utf8');
+        const promptContent = readFileSync(path.join(__dirname, 'prompts', promptFileForMode(modeForFixture)), 'utf8');
         const preflight = buildPreflight(
             diff,
             changedFiles,
@@ -1608,7 +1626,7 @@ async function runFresh() {
         process.exit(1);
     }
 
-    const promptContent = readFileSync(path.join(__dirname, `prompts/${mode}.md`), 'utf8');
+    const promptContent = readFileSync(path.join(__dirname, 'prompts', promptFileForMode(mode)), 'utf8');
     const orchestrator = readFileSync(path.join(__dirname, 'agents/web-testing-orchestrator.md'), 'utf8');
     const testLogsText = readTextIfPresent(testLogsPath, 'test logs');
     const coverageText = readTextIfPresent(coverageSummaryPath, 'coverage summary');

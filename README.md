@@ -26,6 +26,23 @@ The agent does not merely generate tests. It makes a quality decision:
   examples/                       Example scripts
 ```
 
+## Current Product Focus
+
+TestMate v1 is first a copied AI IDE policy kit for individual developers.
+
+The core product surface is model-agnostic:
+
+- `.testmate/AGENTS.md`
+- specialist agent prompts
+- mode prompts
+- the structured decision contract
+- calibration fixtures
+- compact docs for waivers, audit behavior, rollout, and telemetry
+
+These artifacts should work across Cursor, Codex, Claude Code, ChatGPT, OpenAI-backed CLI flows, OpenAI-compatible runtimes, and local-model workflows where the surrounding IDE or agent can read repository files and follow the contract.
+
+The Node CLI is a reference adapter for CI/CD and scripted quality gates. It currently calls OpenAI Chat Completions directly. Future model/API adapters should preserve the same policy, preflight concepts, and output contract rather than fork the rulebook.
+
 ## Dual Workflow Architecture
 
 TestMate operates on two distinct planes to provide safety without slowing down local development.
@@ -50,7 +67,7 @@ When working inside an AI IDE or LLM chat, do not launch the Node.js runner. The
 2. read the requested tier prompt, for example `.testmate/prompts/tier-3-full.md`;
 3. inspect the repository, changed files, scripts, tests, and relevant docs directly;
 4. run only the concrete project commands needed to verify the decision;
-5. return the TestMate decision and create the required audit log.
+5. return the TestMate decision and create the required audit log only for a formal TestMate evaluation run.
 
 In chat-native mode, the LLM already is the orchestrator.
 
@@ -101,6 +118,38 @@ Related docs:
 - GitLab: copy the template from `.testmate/gitlab-ci.yml` into your root `.gitlab-ci.yml`.
 - Ensure `OPENAI_API_KEY` is configured in CI variables.
 
+## CLI Modes
+
+The CLI accepts both workflow-oriented formal modes and legacy tier aliases.
+
+| CLI input | Formal mode | Analysis scope |
+| --- | --- | --- |
+| `pre_commit` or `tier-1-targeted` | `pre_commit` | `DIFF` |
+| `pre_mr` or `tier-2-impact` | `pre_mr` | `AFFECTED` |
+| `pre_merge` | `pre_merge` | `AFFECTED` |
+| `pre_release` or `tier-3-full` | `pre_release` | `FULL` |
+
+Formal audit logs and runtime metrics use the formal `pre_*` mode names.
+
+## Fixture Calibration
+
+TestMate includes two fixture tracks:
+
+- `npm run testmate:benchmark-fixtures` checks deterministic slicing, routing, and baseline metrics for `.testmate/testmate.mjs`.
+- `npm run testmate:replay-fixtures` replays golden decision-contract fixtures from `fixtures/golden/`.
+
+Fixtures are calibration examples, not new rules. Add a fixture when a realistic scenario should test the existing policy language across models or IDEs. Add a new policy rule only when multiple fixtures expose a repeated risk that cannot be honestly covered by the current core policy.
+
+## Metrics
+
+CLI/CI runs write lightweight local aggregate metrics to `.testmate/state/metrics.jsonl`. Inspect them with:
+
+```bash
+npm run testmate:metrics
+```
+
+Local metrics and audit logs must not contain raw prompts, raw diffs, secrets, or customer payloads.
+
 ## Project Documents
 
 - `WORKING_V2_PLAN.md` tracks the current v2 implementation state.
@@ -111,6 +160,10 @@ Related docs:
 - `.testmate/docs/runtime-validation-roadmap.md` tracks runtime validation and contract evolution.
 - `.testmate/docs/chat-native-resume.md` defines how chat agents pause and continue `NEED_INFO` checks without invoking the CLI runner.
 - `.testmate/docs/analytics.md` documents local aggregate metrics written by CLI/CI runs.
+- `.testmate/docs/current-action-plan.md` tracks the current v1 AI IDE copied-kit action plan.
+- `.testmate/docs/ai-ide-prompts.md` contains ready-to-use advisory prompts.
+- `.testmate/docs/fixture-calibration.md` documents fixture strategy.
+- `.testmate/docs/cli-ci-telemetry-todo.md` collects deferred CLI, CI, and telemetry hardening work.
 
 ## Prime Rules
 

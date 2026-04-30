@@ -1,0 +1,87 @@
+{
+  "id": "focused-test-introduced",
+  "title": "Focused test should be detected deterministically",
+  "requestedMode": "pre_commit",
+  "modeConfig": {
+    "formalMode": "pre_commit",
+    "analysisScope": "DIFF"
+  },
+  "baseBranch": "origin/main",
+  "packageJson": {
+    "scripts": {
+      "test": "node --test"
+    }
+  },
+  "diff": "diff --git a/src/cart.test.js b/src/cart.test.js\nindex 1111111..2222222 100644\n--- a/src/cart.test.js\n+++ b/src/cart.test.js\n@@ -1 +1 @@\n-test(\"adds item\", () => {})\n+test.only(\"adds item\", () => {})\n",
+  "files": {
+    "src/cart.test.js": "test.only(\"adds item\", () => {});\n"
+  },
+  "expectedPreflight": {
+    "changedFiles": [
+      "src/cart.test.js"
+    ],
+    "detectedTestRunners": [
+      "node:test"
+    ],
+    "focusedOrSkippedTypes": [
+      "focused_test"
+    ]
+  },
+  "expectedLabels": {
+    "status": "BLOCK",
+    "riskLevel": "HIGH",
+    "policyRulesTriggered": [
+      "NO_SKIPPED_OR_FOCUSED_TESTS"
+    ]
+  },
+  "expectedDecision": {
+    "status": "BLOCK",
+    "mode": "pre_commit",
+    "analysisScope": "DIFF",
+    "riskLevel": "HIGH",
+    "changeType": "focused test introduced",
+    "affectedAreas": [
+      "test suite execution"
+    ],
+    "subagentsRun": [
+      "Discovery Agent",
+      "Security Agent",
+      "Change Impact Analyst",
+      "Test Strategy Agent",
+      "Regression Auditor"
+    ],
+    "policyRulesTriggered": [
+      "NO_SKIPPED_OR_FOCUSED_TESTS"
+    ],
+    "evidence": [
+      {
+        "source": "deterministic_preflight",
+        "type": "focused_test",
+        "summary": "Changed test file contains test.only.",
+        "files": [
+          "src/cart.test.js"
+        ]
+      }
+    ],
+    "requiredCoverage": [],
+    "existingCoverage": [],
+    "missingCoverage": [],
+    "blockers": [
+      "Focused test introduced."
+    ],
+    "warnings": [],
+    "recommendedTests": [
+      "Remove test.only before commit."
+    ],
+    "commandsToRun": [
+      "npm test"
+    ],
+    "manualQA": [],
+    "waivers": [],
+    "overrides": [],
+    "residualRisks": [],
+    "questionsForUser": [],
+    "auditLogPath": "logs/pre_commit_2026-04-29T12-00-00.md",
+    "summary": "Focused tests must not be committed."
+  }
+}

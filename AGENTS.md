@@ -26,7 +26,7 @@ Required chat workflow:
 3. Inspect repository context, changed files, scripts, tests, CI config, and relevant docs directly.
 4. Route specialist agents according to the policy below.
 5. Run only the concrete project verification commands needed for evidence.
-6. Return the TestMate output contract and create the required audit log.
+6. Return the TestMate output contract and create the required audit log only for a formal TestMate evaluation run.
 
 Use the CLI runner only when the user explicitly asks to run the CLI, npm
 script, Node runner, CI workflow, or shell automation.
@@ -52,7 +52,19 @@ Your goal is to prevent frontend/web regressions before commit, pull request, me
 11. If context is missing to evaluate critical risks, stop passing guesses and return NEED_INFO.
 12. **Stop if no issues**: If an agent finds no real risks or actionable items, it MUST return `PASS` and stop. Do not hallucinate or create noise.
 13. **Discovery Mandate**: Always identify the project's tech stack before proposing any terminal commands.
-14. **Audit Mandate**: The Orchestrator MUST create a physical log file in the `.testmate/logs/` directory for every run, following the naming convention: `.testmate/logs/[mode]_[timestamp].md`. All recorded history is final and immutable.
+14. **Audit Mandate**: The Orchestrator MUST create a physical log file in the `.testmate/logs/` directory only for formal TestMate evaluation runs, following the naming convention: `.testmate/logs/[mode]_[timestamp].md`. All recorded history is final and immutable.
+    - A formal TestMate evaluation run means the assistant is performing a real quality gate check and will return the TestMate JSON Output Contract.
+    - Valid audit log modes are only: `pre_commit`, `pre_mr`, `pre_merge`, and `pre_release`.
+    - This applies to actual Tier 1, Tier 2, or Tier 3 TestMate checks, including pre-commit, pre-MR, pre-merge, and pre-release execution.
+    - This does **not** apply to ordinary advisory work such as brainstorming, product discussion, prompt writing, roadmap drafting, documentation editing, methodology discussion, repository exploration, or answering questions that merely reference TestMate.
+    - This does **not** apply to ordinary coding tasks or implementation work on TestMate itself unless the user explicitly requests a formal TestMate evaluation run.
+    - Before creating any file in `.testmate/logs/`, the Orchestrator MUST confirm all of the following:
+      - the task is a formal TestMate evaluation run;
+      - the mode is one of `pre_commit`, `pre_mr`, `pre_merge`, or `pre_release`;
+      - the final response will use the TestMate JSON Output Contract;
+      - the user requested or clearly implied a quality gate check.
+    - If any condition above is false, do not create an audit log.
+    - File names such as `strategy_[timestamp].md`, `docs_[timestamp].md`, `coding_[timestamp].md`, or any non-mode-based name are invalid in `.testmate/logs/`.
 15. **Language Mandate**: Problem descriptions, findings, blockers, warnings, summaries, audit notes, and recommended actions MUST be written in the same language as the user's request unless the user explicitly asks for another language.
     - This applies to every user-facing string in the JSON output contract and the physical audit log, including `summary`, `findings`, `blockers`, `warnings`, `recommendedTests`, `manualQA`, `residualRisks`, and `questionsForUser`.
     - Contract enum values such as `PASS`, `WARNING`, `BLOCK`, `NEED_INFO`, `pre_release`, and `FULL` may remain as machine-readable values.
@@ -94,7 +106,7 @@ directly:
 3. Inspect the repository, changed files, scripts, tests, CI config, and relevant docs directly.
 4. Route specialist agents according to the policy below.
 5. Run only the concrete project commands needed to verify the decision.
-6. Return the TestMate output contract and create the required audit log.
+6. Return the TestMate output contract and create the required audit log only for a formal TestMate evaluation run.
 
 The Node.js runner exists for CI/CD, shell usage, and non-chat automation where
 an external process must package the repository context before calling an LLM.
@@ -259,6 +271,8 @@ When creating a PR, writing a test draft, or reporting a missing test, always us
 
 ## Output Contract
 
+Use this contract only for formal TestMate evaluation runs: `pre_commit`, `pre_mr`, `pre_merge`, or `pre_release`.
+
 Return:
 
 ```json
@@ -303,4 +317,5 @@ Return:
 ```
 
 > [!IMPORTANT]
-> The JSON output above MUST be accompanied by the creation of the file specified in `auditLogPath`.
+> For formal TestMate evaluation runs, the JSON output above MUST be accompanied by the creation of the file specified in `auditLogPath`.
+> For advisory work, documentation work, repository exploration, ordinary coding tasks, or implementation work on TestMate itself, do not use this contract and do not create an audit log unless the user explicitly requests a formal TestMate evaluation run.

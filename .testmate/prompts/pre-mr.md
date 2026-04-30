@@ -4,9 +4,9 @@ Use `.testmate/AGENTS.md` and `.testmate/agents/web-testing-orchestrator.md`.
 
 Tier: 2 (Integrity).
 Mode: pre_mr.
-Analysis Scope: DIFF.
+Analysis Scope: AFFECTED.
 
-Analyze diff against origin/main.
+Analyze diff against origin/main plus adjacent segments and transitive impacts.
 
 Run the logical subagents:
 - Change Impact Analyst

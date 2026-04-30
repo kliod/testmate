@@ -1,0 +1,103 @@
+{
+  "id": "auth-guard-role-change",
+  "title": "Auth guard role change should require role-based coverage",
+  "requestedMode": "pre_mr",
+  "modeConfig": {
+    "formalMode": "pre_mr",
+    "analysisScope": "AFFECTED"
+  },
+  "baseBranch": "origin/main",
+  "packageJson": {
+    "scripts": {
+      "test": "jest"
+    },
+    "dependencies": {
+      "react": "^18.0.0"
+    },
+    "devDependencies": {
+      "jest": "^29.0.0"
+    }
+  },
+  "diff": "diff --git a/src/auth/RoleGuard.tsx b/src/auth/RoleGuard.tsx\nindex 1111111..2222222 100644\n--- a/src/auth/RoleGuard.tsx\n+++ b/src/auth/RoleGuard.tsx\n@@ -1 +1 @@\n-requiredRole === user.role\n+user.roles.includes(requiredRole)\n",
+  "files": {},
+  "expectedPreflight": {
+    "changedFiles": [
+      "src/auth/RoleGuard.tsx"
+    ],
+    "detectedFrameworks": [
+      "react"
+    ],
+    "detectedTestRunners": [
+      "jest"
+    ]
+  },
+  "expectedLabels": {
+    "status": "BLOCK",
+    "riskLevel": "CRITICAL",
+    "policyRulesTriggered": [
+      "AUTH_PERMISSION_REQUIRES_ROLE_COVERAGE"
+    ]
+  },
+  "expectedDecision": {
+    "status": "BLOCK",
+    "mode": "pre_mr",
+    "analysisScope": "AFFECTED",
+    "riskLevel": "CRITICAL",
+    "changeType": "authorization guard behavior change",
+    "affectedAreas": [
+      "role-based access control"
+    ],
+    "subagentsRun": [
+      "Discovery Agent",
+      "Security Agent",
+      "Change Impact Analyst",
+      "Test Strategy Agent",
+      "Regression Auditor",
+      "Auth & Permission Agent",
+      "Integration Test Agent"
+    ],
+    "policyRulesTriggered": [
+      "AUTH_PERMISSION_REQUIRES_ROLE_COVERAGE",
+      "CRITICAL_JOURNEY_REQUIRES_VERIFICATION"
+    ],
+    "evidence": [
+      {
+        "source": "static_repo_inspection",
+        "type": "auth_guard_change",
+        "summary": "Role guard logic changed from single role equality to role collection membership.",
+        "files": [
+          "src/auth/RoleGuard.tsx"
+        ]
+      }
+    ],
+    "requiredCoverage": [
+      "allowed role renders protected content",
+      "denied role cannot render protected content",
+      "missing role denies access"
+    ],
+    "existingCoverage": [],
+    "missingCoverage": [
+      "denied role coverage",
+      "missing role coverage"
+    ],
+    "blockers": [
+      "Authorization guard change lacks role-based negative coverage."
+    ],
+    "warnings": [],
+    "recommendedTests": [
+      "Add role-based integration tests for allowed and denied users."
+    ],
+    "commandsToRun": [
+      "npm test"
+    ],
+    "manualQA": [],
+    "waivers": [],
+    "overrides": [],
+    "residualRisks": [
+      "Access control regression could expose protected content."
+    ],
+    "questionsForUser": [],
+    "auditLogPath": "logs/pre_mr_2026-04-29T12-00-00.md",
+    "summary": "Authorization changes are critical and require role-based coverage."
+  }
+}

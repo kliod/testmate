@@ -1,69 +1,102 @@
-# Стратегия Интерактивности и Аудита (TestMate)
+# Interaction and Audit Strategy for TestMate
 
-Настоящий документ описывает два ключевых процесса оркестратора: обработку нехватки контекста и ведение журнала аудита (Audit Log).
+This document defines two orchestration behaviors for TestMate:
 
-## 1. Запрос дополнительного контекста (NEED_INFO)
+- how the system handles missing context through `NEED_INFO`;
+- how the system creates immutable audit logs for formal TestMate evaluation runs.
 
-В ситуациях, когда Orchestrator или его сабагенты не обладают достаточным контекстом для принятия надежного решения (PASS/WARNING/BLOCK), система обязана запросить информацию у пользователя, чтобы избежать «галлюцинаций».
+The goal is to keep TestMate decisions explainable and reviewable without turning ordinary documentation, implementation, or advisory work into fake audit events.
 
-### Критерии перехода в статус NEED_INFO:
-- Отсутствуют или не описаны контракты API (Swagger, интерфейсы), к которым обращается измененный код.
-- Неясны бизнес-требования для обработки ошибок и негативных сценариев (например, как UI должен реагировать на 403 Forbidden).
-- Внесены структурные архитектурные изменения без явного обоснования.
+## 1. Missing Context and `NEED_INFO`
 
-### Реакция на NEED_INFO:
-1. **AI IDE (Локально):** Оркестратор прерывает выполнение и выводит вопросы в чат, позволяя разработчику приложить ТЗ или текстом описать детали.
-2. **CI/CD Скрипт (testmate.mjs):** Скрипт генерирует автоматический комментарий к Pull/Merge Request с перечнем уточняющих вопросов из поля `questionsForUser` и блокирует пайплайн до предоставления ответов.
+When the Orchestrator or one of its specialist agents does not have enough context to make a reliable `PASS`, `WARNING`, or `BLOCK` decision, it must return `NEED_INFO` instead of guessing.
 
-## 2. Глобальный Лог Аудита (Audit Log)
+Use `NEED_INFO` when one or more of the following are true:
 
-Для обеспечения прозрачности (Traceability) решений ИИ, Оркестратор **ОБЯЗАН** генерировать и сохранять физический лог аудита для всех уровней проверок (Tier 1, 2, 3).
+- API contracts, schemas, generated clients, or interface definitions are missing for changed code that depends on them.
+- Business requirements for error handling, negative states, or edge cases are unclear.
+- Auth, permissions, routing guards, mutation behavior, file upload handling, or cache invalidation depends on missing context.
+- The system cannot determine whether a missing test is a real coverage gap or an intentional documented exception.
+- CI, PR, diff, or dependency metadata required for the selected tier is unavailable.
 
-**Важное правило (Audit Mandate):** Оркестратор обязан создавать новый файл лога в директории `.testmate/logs/` для каждого запуска, следуя правилам именования с таймкодом. При этом категорически запрещено редактировать, дополнять или удалять уже существующие файлы (Audit Immutability).
+Do not use `NEED_INFO` as a safe escape hatch for weak analysis. The response must name the specific missing information and explain which decision it blocks.
 
-Каждый запуск оркестратора — это новая запись в истории, которая не может быть изменена постфактум.
+## 2. Audit Log Strategy
 
-### Формат
-Текстовый лог должен использовать формат Markdown с тегами `<details>` и `<summary>`. Это обеспечивает компактность сводки при возможности детального развертывания каждого пункта (цепочки рассуждений каждого сабагента).
+Audit logs preserve decision provenance for formal TestMate evaluation runs.
 
-### Требования к Аудит-логу:
-Для обеспечения единого формата и читаемости логов применяется следующая структура записи ответа каждого агента:
+An audit log is not a general work journal. It must not be created for ordinary advisory work, brainstorming, roadmap drafting, repository exploration, documentation editing, or implementation work on TestMate itself unless the user explicitly requests a formal TestMate evaluation run.
 
-1. **Верхний уровень (Открытый):**
-   - Имя сабагента.
-   - Его итоговый вердикт (PASS / WARNING / BLOCK / NEED_INFO).
-   - Краткое описание вывода.
+### Formal Evaluation Run Definition
 
-2. **Скрытый блок (`<details>`):**
-   - **Inputs:** Какие файлы агент реально анализировал.
-   - **Пасстрейсинг (Trace):** Пошаговая цепочка рассуждений, приведшая к вердикту.
-   - **Объемный вывод:** Куски кода, стектрейсы или сырой JSON-ответ утилит.
-   - **Допущения (Assumptions):** Недокументированные факты, которые агент принял за истину (важно для дебага «галлюцинаций»).
+A formal TestMate evaluation run is a real quality gate check that will return the TestMate JSON Output Contract.
 
-### Пример премиального формата (информативен в свернутом виде):
+Valid formal modes are:
 
-```markdown
-### 🕵️‍♂️ Auth & Permission Agent — ⚠️ WARNING
-> **Summary**: Обнаружено отсутствие тестов для негативных сценариев (403 Forbidden).
+- `pre_commit`;
+- `pre_mr`;
+- `pre_merge`;
+- `pre_release`.
 
-<details>
-<summary>🔍 Развернуть технический анализ и трейсинг</summary>
-&nbsp;
+Valid audit log file names must follow this pattern:
 
-**Вводные данные (Inputs):** `src/auth/RoleGuard.tsx`  
-
-**Пасстрейсинг:**
-1. Найден добавленный `RoleGuard.tsx`.
-2. Обнаружен тест `should allow ADMIN`. Сценарий для `GUEST` отсутствует.
-
-**Анализ кода:**
-` ` `tsx
-if (!user.roles.includes(requiredRole)) return <Redirect to="/403" />;
-` ` `
-
-**Допущения (Assumptions):**
-- Предполагается, что компонент `<Redirect>` протестирован библиотекой.
-</details>
+```text
+.testmate/logs/[mode]_[timestamp].md
 ```
 
-*Файлы аудит-логов (все `.md` в папке `.testmate/logs/`) никогда не коммитятся и должны быть добавлены в `.gitignore`.*
+Invalid examples:
+
+```text
+.testmate/logs/strategy_2026-04-28.md
+.testmate/logs/docs_2026-04-28.md
+.testmate/logs/coding_2026-04-28.md
+.testmate/logs/random_notes.md
+```
+
+Before creating a file in `.testmate/logs/`, the Orchestrator must confirm all of the following:
+
+- the task is a formal TestMate evaluation run;
+- the mode is one of `pre_commit`, `pre_mr`, `pre_merge`, or `pre_release`;
+- the final response will use the TestMate JSON Output Contract;
+- the user requested or clearly implied a quality gate check.
+
+If any condition is false, do not create an audit log.
+
+### Audit Immutability
+
+Audit logs are immutable records of completed evaluation runs.
+
+Once an audit log has been created, it must not be edited, appended to, rewritten, renamed, or deleted as part of normal operation. If a new evaluation is needed, create a new audit log with a new timestamp.
+
+The CLI enforces immutable writes with exclusive file creation. Audit log files in `.testmate/logs/` are local state and must not be committed or published.
+
+## 3. Relationship Between Audit Logs and Journaling
+
+Audit logs and `.testmate/journal.md` serve different purposes.
+
+Audit logs:
+
+- are created only for formal TestMate evaluation runs;
+- capture one immutable evaluation event;
+- belong in `.testmate/logs/[mode]_[timestamp].md`;
+- should not be edited after creation.
+
+`.testmate/journal.md`:
+
+- stores persistent repo-specific learnings across runs;
+- should be read by agents before evaluation;
+- should be written only for critical durable insights;
+- must not be used for routine work notes.
+
+## 4. Governance Guardrails
+
+Required guardrails:
+
+- Create audit logs only for formal quality gate checks.
+- Do not create audit logs for documentation or implementation tasks unless a formal evaluation run is explicitly requested.
+- Preserve decision provenance.
+- Keep blocking policy explicit and versioned.
+- Treat `BLOCK`, `WARNING`, and `NEED_INFO` as separate decision products.
+- Track waivers and overrides with reasons.
+- Keep measured, estimated, inferred, and derived information separate.
+- Do not claim prevented defects or ROI without evidence and confidence limits.
