@@ -1,0 +1,110 @@
+{
+  "id": "api-mutation-with-waiver",
+  "title": "API mutation missing error coverage may warn with an explicit waiver",
+  "requestedMode": "pre_mr",
+  "modeConfig": {
+    "formalMode": "pre_mr",
+    "analysisScope": "AFFECTED"
+  },
+  "baseBranch": "origin/main",
+  "packageJson": {
+    "scripts": {
+      "test": "vitest run"
+    },
+    "dependencies": {
+      "react": "^18.0.0"
+    },
+    "devDependencies": {
+      "vitest": "^2.0.0"
+    }
+  },
+  "diff": "diff --git a/src/api/orders.ts b/src/api/orders.ts\nindex 1111111..2222222 100644\n--- a/src/api/orders.ts\n+++ b/src/api/orders.ts\n@@ -1 +1 @@\n-post('/orders', payload)\n+post('/orders', normalizeOrder(payload))\n",
+  "files": {},
+  "expectedPreflight": {
+    "changedFiles": [
+      "src/api/orders.ts"
+    ],
+    "detectedTestRunners": [
+      "vitest"
+    ]
+  },
+  "expectedLabels": {
+    "status": "WARNING",
+    "riskLevel": "HIGH",
+    "policyRulesTriggered": [
+      "API_MUTATION_REQUIRES_SUCCESS_ERROR_COVERAGE"
+    ]
+  },
+  "expectedDecision": {
+    "status": "WARNING",
+    "mode": "pre_mr",
+    "analysisScope": "AFFECTED",
+    "riskLevel": "HIGH",
+    "changeType": "API mutation payload change",
+    "affectedAreas": [
+      "order creation API"
+    ],
+    "subagentsRun": [
+      "Discovery Agent",
+      "Security Agent",
+      "Change Impact Analyst",
+      "Test Strategy Agent",
+      "Regression Auditor",
+      "API Mock & Contract Agent",
+      "Integration Test Agent"
+    ],
+    "policyRulesTriggered": [
+      "API_MUTATION_REQUIRES_SUCCESS_ERROR_COVERAGE"
+    ],
+    "evidence": [
+      {
+        "source": "human_waiver",
+        "type": "explicit_risk_acceptance",
+        "summary": "Error-path test is waived temporarily with follow-up issue.",
+        "files": [
+          "src/api/orders.ts"
+        ]
+      }
+    ],
+    "requiredCoverage": [
+      "mutation success path",
+      "mutation error path"
+    ],
+    "existingCoverage": [
+      "mutation success path"
+    ],
+    "missingCoverage": [
+      "mutation error path"
+    ],
+    "blockers": [],
+    "warnings": [
+      "API mutation error-path coverage is waived temporarily."
+    ],
+    "recommendedTests": [
+      "Add error-path test for order creation failure."
+    ],
+    "commandsToRun": [
+      "npm test"
+    ],
+    "manualQA": [
+      "Verify order creation success and server error handling in staging."
+    ],
+    "waivers": [
+      {
+        "reason": "Release hotfix with manual QA coverage.",
+        "riskLevel": "HIGH",
+        "approvedBy": "team-lead@example.com",
+        "expiresAt": "2026-05-06",
+        "followUp": "Add error-path regression test for order creation.",
+        "issue": "QA-123"
+      }
+    ],
+    "overrides": [],
+    "residualRisks": [
+      "Server error response handling could regress until follow-up test is added."
+    ],
+    "questionsForUser": [],
+    "auditLogPath": "logs/pre_mr_2026-04-29T12-00-00.md",
+    "summary": "API mutation risk is accepted temporarily through an explicit waiver."
+  }
+}

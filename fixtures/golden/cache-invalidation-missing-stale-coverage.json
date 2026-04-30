@@ -1,0 +1,114 @@
+{
+  "id": "cache-invalidation-missing-stale-coverage",
+  "title": "Cache invalidation change without stale-data coverage should block",
+  "requestedMode": "pre_mr",
+  "modeConfig": {
+    "formalMode": "pre_mr",
+    "analysisScope": "AFFECTED"
+  },
+  "baseBranch": "origin/main",
+  "packageJson": {
+    "scripts": {
+      "test": "vitest run"
+    },
+    "dependencies": {
+      "react": "^18.0.0",
+      "@tanstack/react-query": "^5.0.0"
+    },
+    "devDependencies": {
+      "vitest": "^2.0.0"
+    }
+  },
+  "diff": "diff --git a/src/orders/useCancelOrder.ts b/src/orders/useCancelOrder.ts\nindex 1111111..2222222 100644\n--- a/src/orders/useCancelOrder.ts\n+++ b/src/orders/useCancelOrder.ts\n@@ -1 +1 @@\n-queryClient.invalidateQueries({ queryKey: ['orders'] })\n+queryClient.invalidateQueries({ queryKey: ['order', orderId] })\n",
+  "files": {},
+  "calibration": {
+    "riskArea": "cache_invalidation",
+    "policyIntent": "HIGH_RISK_REQUIRES_MEANINGFUL_COVERAGE",
+    "whyThisMatters": "Cache invalidation key changed and stale list behavior is unverified.",
+    "notARule": true,
+    "acceptableAlternatives": [
+      {
+        "status": "NEED_INFO",
+        "when": "The expected cache relationship between order detail and order list is not known."
+      }
+    ]
+  },
+  "expectedPreflight": {
+    "changedFiles": [
+      "src/orders/useCancelOrder.ts"
+    ],
+    "detectedFrameworks": [
+      "react"
+    ],
+    "detectedTestRunners": [
+      "vitest"
+    ]
+  },
+  "expectedLabels": {
+    "status": "BLOCK",
+    "riskLevel": "HIGH",
+    "policyRulesTriggered": [
+      "HIGH_RISK_REQUIRES_MEANINGFUL_COVERAGE"
+    ]
+  },
+  "expectedDecision": {
+    "status": "BLOCK",
+    "mode": "pre_mr",
+    "analysisScope": "AFFECTED",
+    "riskLevel": "HIGH",
+    "changeType": "cache invalidation behavior change",
+    "affectedAreas": [
+      "order cache invalidation"
+    ],
+    "subagentsRun": [
+      "Discovery Agent",
+      "Security Agent",
+      "Change Impact Analyst",
+      "Test Strategy Agent",
+      "Regression Auditor",
+      "Data Fetching & Cache Agent",
+      "Integration Test Agent"
+    ],
+    "policyRulesTriggered": [
+      "HIGH_RISK_REQUIRES_MEANINGFUL_COVERAGE"
+    ],
+    "evidence": [
+      {
+        "source": "llm_inference",
+        "type": "risk_classification",
+        "summary": "Cache invalidation key changed without stale-data coverage.",
+        "files": [
+          "src/orders/useCancelOrder.ts"
+        ]
+      }
+    ],
+    "requiredCoverage": [
+      "order list is refreshed or remains correct after cancellation",
+      "order detail cache remains correct after cancellation"
+    ],
+    "existingCoverage": [],
+    "missingCoverage": [
+      "stale order list behavior after cancellation"
+    ],
+    "blockers": [
+      "High-risk cache invalidation change lacks meaningful stale-data coverage."
+    ],
+    "warnings": [],
+    "recommendedTests": [
+      "Add an integration test proving canceled order state is reflected in the affected views."
+    ],
+    "commandsToRun": [
+      "npm test"
+    ],
+    "manualQA": [],
+    "waivers": [],
+    "overrides": [],
+    "residualRisks": [
+      "Users may see stale order data after cancellation."
+    ],
+    "questionsForUser": [],
+    "auditLogPath": "logs/pre_mr_2026-04-29T12-10-00.md",
+    "summary": "Cache invalidation behavior changed and needs stale-data coverage."
+  }
+}
+

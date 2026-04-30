@@ -1,0 +1,108 @@
+{
+  "id": "api-mutation-missing-error-coverage",
+  "title": "API mutation without error-path coverage should block",
+  "requestedMode": "pre_mr",
+  "modeConfig": {
+    "formalMode": "pre_mr",
+    "analysisScope": "AFFECTED"
+  },
+  "baseBranch": "origin/main",
+  "packageJson": {
+    "scripts": {
+      "test": "vitest run"
+    },
+    "dependencies": {
+      "react": "^18.0.0"
+    },
+    "devDependencies": {
+      "vitest": "^2.0.0"
+    }
+  },
+  "diff": "diff --git a/src/api/orders.ts b/src/api/orders.ts\nindex 1111111..2222222 100644\n--- a/src/api/orders.ts\n+++ b/src/api/orders.ts\n@@ -1 +1 @@\n-export function cancelOrder(id) { return client.post(`/orders/${id}/cancel`) }\n+export function cancelOrder(id, reason) { return client.post(`/orders/${id}/cancel`, { reason }) }\n",
+  "files": {},
+  "calibration": {
+    "riskArea": "api_mutation",
+    "policyIntent": "API_MUTATION_REQUIRES_SUCCESS_ERROR_COVERAGE",
+    "whyThisMatters": "Mutation request shape changed and error behavior is unverified.",
+    "notARule": true
+  },
+  "expectedPreflight": {
+    "changedFiles": [
+      "src/api/orders.ts"
+    ],
+    "detectedFrameworks": [
+      "react"
+    ],
+    "detectedTestRunners": [
+      "vitest"
+    ]
+  },
+  "expectedLabels": {
+    "status": "BLOCK",
+    "riskLevel": "HIGH",
+    "policyRulesTriggered": [
+      "API_MUTATION_REQUIRES_SUCCESS_ERROR_COVERAGE"
+    ]
+  },
+  "expectedDecision": {
+    "status": "BLOCK",
+    "mode": "pre_mr",
+    "analysisScope": "AFFECTED",
+    "riskLevel": "HIGH",
+    "changeType": "API mutation request shape change",
+    "affectedAreas": [
+      "order cancellation mutation"
+    ],
+    "subagentsRun": [
+      "Discovery Agent",
+      "Security Agent",
+      "Change Impact Analyst",
+      "Test Strategy Agent",
+      "Regression Auditor",
+      "API Mock & Contract Agent",
+      "Integration Test Agent"
+    ],
+    "policyRulesTriggered": [
+      "API_MUTATION_REQUIRES_SUCCESS_ERROR_COVERAGE",
+      "HIGH_RISK_REQUIRES_MEANINGFUL_COVERAGE"
+    ],
+    "evidence": [
+      {
+        "source": "llm_inference",
+        "type": "risk_classification",
+        "summary": "API mutation payload changed without success and error-path coverage.",
+        "files": [
+          "src/api/orders.ts"
+        ]
+      }
+    ],
+    "requiredCoverage": [
+      "successful cancellation request includes reason",
+      "server error path is handled"
+    ],
+    "existingCoverage": [],
+    "missingCoverage": [
+      "server error path is handled"
+    ],
+    "blockers": [
+      "API mutation change lacks error-path coverage."
+    ],
+    "warnings": [],
+    "recommendedTests": [
+      "Add an integration or API-client test for failed cancellation response."
+    ],
+    "commandsToRun": [
+      "npm test"
+    ],
+    "manualQA": [],
+    "waivers": [],
+    "overrides": [],
+    "residualRisks": [
+      "Order cancellation failures may be unhandled."
+    ],
+    "questionsForUser": [],
+    "auditLogPath": "logs/pre_mr_2026-04-29T12-05-00.md",
+    "summary": "High-risk API mutation requires success and error coverage before merge."
+  }
+}
+

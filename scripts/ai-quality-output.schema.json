@@ -5,20 +5,36 @@
   "required": [
     "status",
     "mode",
+    "analysisScope",
     "riskLevel",
     "changeType",
     "affectedAreas",
     "subagentsRun",
+    "policyRulesTriggered",
+    "evidence",
+    "requiredCoverage",
+    "existingCoverage",
+    "missingCoverage",
     "blockers",
     "warnings",
+    "recommendedTests",
+    "commandsToRun",
+    "manualQA",
+    "waivers",
+    "overrides",
+    "residualRisks",
+    "questionsForUser",
+    "auditLogPath",
     "summary"
   ],
+  "additionalProperties": true,
   "properties": {
     "status": {
       "enum": [
         "PASS",
         "WARNING",
-        "BLOCK"
+        "BLOCK",
+        "NEED_INFO"
       ]
     },
     "mode": {
@@ -27,6 +43,13 @@
         "pre_mr",
         "pre_merge",
         "pre_release"
+      ]
+    },
+    "analysisScope": {
+      "enum": [
+        "DIFF",
+        "AFFECTED",
+        "FULL"
       ]
     },
     "riskLevel": {
@@ -50,6 +73,18 @@
       "type": "array",
       "items": {
         "type": "string"
+      }
+    },
+    "policyRulesTriggered": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object"
       }
     },
     "requiredCoverage": {
@@ -100,11 +135,33 @@
         "type": "string"
       }
     },
+    "waivers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "overrides": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
     "residualRisks": {
       "type": "array",
       "items": {
         "type": "string"
       }
+    },
+    "questionsForUser": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "auditLogPath": {
+      "type": "string",
+      "pattern": "^logs\\/(pre_commit|pre_mr|pre_merge|pre_release)_[^\\/]+\\.md$"
     },
     "summary": {
       "type": "string"

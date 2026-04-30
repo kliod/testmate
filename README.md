@@ -6,9 +6,9 @@ Goal: give Cursor / Claude Code / Codex / Antigravity a compact operating model 
 
 The agent does not merely generate tests. It makes a quality decision:
 
-- `PASS` — safe to continue
-- `WARNING` — acceptable with documented risk
-- `BLOCK` — must fix before moving forward
+- `PASS` - safe to continue
+- `WARNING` - acceptable with documented risk
+- `BLOCK` - must fix before moving forward
 
 ## Contents
 
@@ -22,6 +22,23 @@ scripts/                          Example quality gate scripts/schema
 cursor-rules/                     Cursor-ready rules
 examples/                         Example package scripts
 ```
+
+## Current Product Focus
+
+TestMate v1 is first a copied AI IDE policy kit for individual developers.
+
+The core product surface is model-agnostic:
+
+- `AGENTS.md`
+- specialist agent prompts
+- mode prompts
+- the structured decision contract
+- calibration fixtures
+- compact docs for waivers, overrides, and rollout
+
+These artifacts should work across Cursor, Codex, Claude Code, ChatGPT, OpenAI-backed CLI flows, OpenAI-compatible runtimes, and local-model workflows where the surrounding IDE or agent can read repository files and follow the contract.
+
+The Node CLI is a reference adapter for CI/CD and scripted quality gates. It currently calls OpenAI Chat Completions directly. Other model/API adapters are expected to preserve the same policy, preflight concepts, and output contract rather than fork the rulebook.
 
 ## Dual Workflow Architecture
 
@@ -45,7 +62,9 @@ Servers don't have IDE interfaces, so we provide `scripts/testmate.mjs`.
 ## Installation & Setup
 
 1. **Clone the repo** into your project or add it as a submodule.
-2. **Set up Environment**: Ensure `OPENAI_API_KEY` is available in your environment variables.
+2. **Set up Environment**:
+   - Local advisory work in an AI IDE does not require `OPENAI_API_KEY`.
+   - CLI quality-gate runs require `OPENAI_API_KEY` because `scripts/testmate.mjs` calls the OpenAI API.
 3. **Run Locally**:
    ```bash
    npm install
@@ -55,6 +74,56 @@ Servers don't have IDE interfaces, so we provide `scripts/testmate.mjs`.
    - **GitHub**: Use the provided actions in `.github/workflows`.
    - **GitLab**: Use the provided `.gitlab-ci.yml`. Ensure `OPENAI_API_KEY` is set in CI/CD Variables.
 
+The provided GitHub quality gate is currently configured for non-blocking adoption:
+
+```yaml
+TESTMATE_REQUIRE_API_KEY: "false"
+```
+
+With this setting, CI skips the AI quality gate when `OPENAI_API_KEY` is not configured.
+For production repositories, protected branches, or serious quality-gate enforcement, set:
+
+```yaml
+TESTMATE_REQUIRE_API_KEY: "true"
+```
+
+That makes a missing `OPENAI_API_KEY` fail the workflow instead of silently skipping TestMate.
+
+## CLI Modes
+
+The CLI accepts both workflow-oriented formal modes and legacy tier aliases.
+
+| CLI input | Formal mode | Analysis scope |
+| --- | --- | --- |
+| `pre_commit` or `tier-1-targeted` | `pre_commit` | `DIFF` |
+| `pre_mr` or `tier-2-impact` | `pre_mr` | `AFFECTED` |
+| `pre_merge` | `pre_merge` | `AFFECTED` |
+| `pre_release` or `tier-3-full` | `pre_release` | `FULL` |
+
+Formal audit logs and runtime metrics always use the formal `pre_*` mode names.
+
+## Golden Fixture Replay
+
+TestMate includes a local maintainer replay suite for deterministic quality-gate fixtures.
+This does not call the OpenAI API and does not create audit logs.
+
+```bash
+npm run testmate:replay-fixtures
+```
+
+Fixtures live in `fixtures/golden/` and cover starter scenarios such as static copy, form submit risk, auth guard risk, focused tests, and explicit waivers.
+Most product teams do not need to run this during normal feature development.
+
+Fixtures are calibration examples, not new rules. Add a fixture when a realistic scenario should test the existing policy language across models or IDEs. Add a new policy rule only when multiple fixtures expose a repeated risk that cannot be honestly covered by the current core policy.
+
+## AI IDE Prompts
+
+For ready-to-use advisory prompts, see `docs/ai-ide-prompts.md`.
+
+## Team Pilot
+
+For rollout guidance, see `docs/team-pilot-guide.md`.
+
 ## Prime rules
 
 - Every non-trivial change requires test impact analysis.
@@ -63,3 +132,56 @@ Servers don't have IDE interfaces, so we provide `scripts/testmate.mjs`.
 - Test user behavior, not implementation details.
 - Use the lowest reliable test layer.
 - Do not create flaky tests.
+
+## Effectiveness Metrics Phase 1
+
+TestMate records lightweight local effectiveness data for formal quality gate runs.
+
+- Runtime records are written to `.testmate/state/metrics.jsonl`.
+- Follow-up outcome events are written to `.testmate/state/effectiveness.jsonl`.
+- The data is local, append-only, and should not contain raw prompts, raw diffs, secrets, or customer payloads.
+
+Show the current effectiveness summary:
+
+```bash
+npm run testmate:effectiveness
+```
+
+Show a human-readable summary:
+
+```bash
+node scripts/testmate.mjs --show-effectiveness --format=markdown
+```
+
+Limit the summary to a recent time window:
+
+```bash
+node scripts/testmate.mjs --show-effectiveness --days=30
+```
+
+Record a follow-up event after a decision:
+
+```bash
+node scripts/testmate.mjs --record-effectiveness-event=tests_added_after_decision --run-id=<runId> --decision-status=WARNING --meaningfulness=meaningful --reason-code=test_added --follow-up-issue=QA-123 --reviewed-by=lead@example.com --notes="Regression test added"
+```
+
+Supported event types include:
+
+- `coverage_gap_detected`
+- `tests_added_after_decision`
+- `manual_qa_added`
+- `follow_up_fix_required`
+- `follow_up_fix_completed`
+- `decision_overridden`
+- `waiver_used`
+- `clarification_required`
+- `clarification_resolved`
+- `issue_prevented`
+- `post_decision_action_taken`
+- `release_drift_caught`
+
+The summary reports measured counts and ratios separately from estimated value. Estimated review minutes are heuristic ranges, not financial ROI.
+Use `reasonCode`, `evidenceLink`, `followUpIssue`, and `reviewedBy` when recording follow-up events so waiver, override, and action quality can be interpreted later.
+Runtime records include cost telemetry fields such as `model`, `inputTokens`, `outputTokens`, `cachedInputTokens`, and `totalTokens` when the provider returns usage data. Missing cost values are left empty rather than guessed.
+
+Effectiveness reports are product artifacts. They should be generated in the language of the user request while preserving stable identifiers such as event types, JSON keys, modes, statuses, and file paths.

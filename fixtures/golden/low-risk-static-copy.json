@@ -1,0 +1,80 @@
+{
+  "id": "low-risk-static-copy",
+  "title": "Static copy change should remain low risk",
+  "requestedMode": "tier-1-targeted",
+  "modeConfig": {
+    "formalMode": "pre_commit",
+    "analysisScope": "DIFF"
+  },
+  "baseBranch": "origin/main",
+  "packageJson": {
+    "scripts": {
+      "test": "node --test"
+    },
+    "dependencies": {
+      "react": "^18.0.0"
+    }
+  },
+  "diff": "diff --git a/src/content/about.md b/src/content/about.md\nindex 1111111..2222222 100644\n--- a/src/content/about.md\n+++ b/src/content/about.md\n@@ -1 +1 @@\n-Old copy\n+New copy\n",
+  "files": {},
+  "expectedPreflight": {
+    "changedFiles": [
+      "src/content/about.md"
+    ],
+    "detectedFrameworks": [
+      "react"
+    ],
+    "detectedTestRunners": [
+      "node:test"
+    ]
+  },
+  "expectedLabels": {
+    "status": "PASS",
+    "riskLevel": "LOW",
+    "policyRulesTriggered": []
+  },
+  "expectedDecision": {
+    "status": "PASS",
+    "mode": "pre_commit",
+    "analysisScope": "DIFF",
+    "riskLevel": "LOW",
+    "changeType": "static content copy change",
+    "affectedAreas": [
+      "about content"
+    ],
+    "subagentsRun": [
+      "Discovery Agent",
+      "Security Agent",
+      "Change Impact Analyst",
+      "Test Strategy Agent",
+      "Regression Auditor"
+    ],
+    "policyRulesTriggered": [],
+    "evidence": [
+      {
+        "source": "deterministic_preflight",
+        "type": "changed_files",
+        "summary": "Only static markdown content changed.",
+        "files": [
+          "src/content/about.md"
+        ]
+      }
+    ],
+    "requiredCoverage": [],
+    "existingCoverage": [],
+    "missingCoverage": [],
+    "blockers": [],
+    "warnings": [],
+    "recommendedTests": [],
+    "commandsToRun": [
+      "npm test"
+    ],
+    "manualQA": [],
+    "waivers": [],
+    "overrides": [],
+    "residualRisks": [],
+    "questionsForUser": [],
+    "auditLogPath": "logs/pre_commit_2026-04-29T12-00-00.md",
+    "summary": "Static content change is low risk."
+  }
+}

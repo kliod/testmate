@@ -1,0 +1,101 @@
+{
+  "id": "form-submit-missing-validation",
+  "title": "Form submit change without validation coverage should block",
+  "requestedMode": "tier-2-impact",
+  "modeConfig": {
+    "formalMode": "pre_mr",
+    "analysisScope": "AFFECTED"
+  },
+  "baseBranch": "origin/main",
+  "packageJson": {
+    "scripts": {
+      "test": "vitest run"
+    },
+    "dependencies": {
+      "react": "^18.0.0"
+    },
+    "devDependencies": {
+      "vitest": "^2.0.0"
+    }
+  },
+  "diff": "diff --git a/src/forms/ProfileForm.tsx b/src/forms/ProfileForm.tsx\nindex 1111111..2222222 100644\n--- a/src/forms/ProfileForm.tsx\n+++ b/src/forms/ProfileForm.tsx\n@@ -1 +1 @@\n-submitProfile(data)\n+submitProfile(normalize(data))\n",
+  "files": {},
+  "expectedPreflight": {
+    "changedFiles": [
+      "src/forms/ProfileForm.tsx"
+    ],
+    "detectedFrameworks": [
+      "react"
+    ],
+    "detectedTestRunners": [
+      "vitest"
+    ]
+  },
+  "expectedLabels": {
+    "status": "BLOCK",
+    "riskLevel": "HIGH",
+    "policyRulesTriggered": [
+      "FORM_CHANGE_REQUIRES_VALIDATION_COVERAGE"
+    ]
+  },
+  "expectedDecision": {
+    "status": "BLOCK",
+    "mode": "pre_mr",
+    "analysisScope": "AFFECTED",
+    "riskLevel": "HIGH",
+    "changeType": "form submit behavior change",
+    "affectedAreas": [
+      "profile form submit"
+    ],
+    "subagentsRun": [
+      "Discovery Agent",
+      "Security Agent",
+      "Change Impact Analyst",
+      "Test Strategy Agent",
+      "Regression Auditor",
+      "Form & Validation Agent",
+      "Integration Test Agent"
+    ],
+    "policyRulesTriggered": [
+      "FORM_CHANGE_REQUIRES_VALIDATION_COVERAGE",
+      "HIGH_RISK_REQUIRES_MEANINGFUL_COVERAGE"
+    ],
+    "evidence": [
+      {
+        "source": "llm_inference",
+        "type": "risk_classification",
+        "summary": "Changed form submit normalization without validation-path coverage.",
+        "files": [
+          "src/forms/ProfileForm.tsx"
+        ]
+      }
+    ],
+    "requiredCoverage": [
+      "validation failure path",
+      "successful submit path"
+    ],
+    "existingCoverage": [],
+    "missingCoverage": [
+      "validation failure path"
+    ],
+    "blockers": [
+      "Form submit change lacks validation coverage."
+    ],
+    "warnings": [],
+    "recommendedTests": [
+      "Add a component or integration test for invalid profile form submit."
+    ],
+    "commandsToRun": [
+      "npm test"
+    ],
+    "manualQA": [],
+    "waivers": [],
+    "overrides": [],
+    "residualRisks": [
+      "Submit normalization could regress invalid input handling."
+    ],
+    "questionsForUser": [],
+    "auditLogPath": "logs/pre_mr_2026-04-29T12-00-00.md",
+    "summary": "High-risk form submit change requires validation coverage before merge."
+  }
+}

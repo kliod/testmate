@@ -1,0 +1,100 @@
+{
+  "id": "skipped-test-introduced",
+  "title": "Skipped test introduced without explanation should block",
+  "requestedMode": "pre_commit",
+  "modeConfig": {
+    "formalMode": "pre_commit",
+    "analysisScope": "DIFF"
+  },
+  "baseBranch": "origin/main",
+  "packageJson": {
+    "scripts": {
+      "test": "node --test"
+    }
+  },
+  "diff": "diff --git a/src/checkout.test.js b/src/checkout.test.js\nindex 1111111..2222222 100644\n--- a/src/checkout.test.js\n+++ b/src/checkout.test.js\n@@ -1 +1 @@\n+test.skip('submits checkout', () => {})\n",
+  "files": {
+    "src/checkout.test.js": "test.skip('submits checkout', () => {});\n"
+  },
+  "calibration": {
+    "riskArea": "test_integrity",
+    "policyIntent": "NO_SKIPPED_OR_FOCUSED_TESTS",
+    "whyThisMatters": "Skipped tests can hide missing regression coverage.",
+    "notARule": true
+  },
+  "expectedPreflight": {
+    "changedFiles": [
+      "src/checkout.test.js"
+    ],
+    "detectedTestRunners": [
+      "node:test"
+    ],
+    "focusedOrSkippedTypes": [
+      "skipped_test"
+    ]
+  },
+  "expectedLabels": {
+    "status": "BLOCK",
+    "riskLevel": "HIGH",
+    "policyRulesTriggered": [
+      "NO_SKIPPED_OR_FOCUSED_TESTS"
+    ]
+  },
+  "expectedDecision": {
+    "status": "BLOCK",
+    "mode": "pre_commit",
+    "analysisScope": "DIFF",
+    "riskLevel": "HIGH",
+    "changeType": "skipped test introduced",
+    "affectedAreas": [
+      "checkout tests"
+    ],
+    "subagentsRun": [
+      "Discovery Agent",
+      "Security Agent",
+      "Change Impact Analyst",
+      "Test Strategy Agent",
+      "Regression Auditor",
+      "Flaky Test Investigator"
+    ],
+    "policyRulesTriggered": [
+      "NO_SKIPPED_OR_FOCUSED_TESTS"
+    ],
+    "evidence": [
+      {
+        "source": "deterministic_preflight",
+        "type": "skipped_test",
+        "summary": "Changed test file contains test.skip.",
+        "files": [
+          "src/checkout.test.js"
+        ]
+      }
+    ],
+    "requiredCoverage": [
+      "checkout submit test should run or have an explicit waiver"
+    ],
+    "existingCoverage": [],
+    "missingCoverage": [
+      "checkout submit test is skipped"
+    ],
+    "blockers": [
+      "Skipped test introduced without explanation."
+    ],
+    "warnings": [],
+    "recommendedTests": [
+      "Unskip the checkout submit test or document an explicit waiver with follow-up."
+    ],
+    "commandsToRun": [
+      "npm test"
+    ],
+    "manualQA": [],
+    "waivers": [],
+    "overrides": [],
+    "residualRisks": [
+      "Checkout submit regression coverage may be disabled."
+    ],
+    "questionsForUser": [],
+    "auditLogPath": "logs/pre_commit_2026-04-29T12-15-00.md",
+    "summary": "Skipped tests are blocking unless explicitly justified."
+  }
+}

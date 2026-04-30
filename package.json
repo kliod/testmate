@@ -5,9 +5,12 @@
   "type": "module",
   "main": "scripts/testmate.mjs",
   "scripts": {
+    "test": "node --test",
     "testmate:targeted": "node scripts/testmate.mjs tier-1-targeted",
     "testmate:integrity": "node scripts/testmate.mjs tier-2-impact",
-    "testmate:stability": "node scripts/testmate.mjs tier-3-full"
+    "testmate:stability": "node scripts/testmate.mjs tier-3-full",
+    "testmate:effectiveness": "node scripts/testmate.mjs --show-effectiveness",
+    "testmate:replay-fixtures": "node scripts/testmate.mjs --replay-fixtures"
   },
   "keywords": [
     "testing",
