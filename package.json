@@ -8,8 +8,8 @@
     "testmate": ".testmate/testmate.mjs"
   },
   "scripts": {
-    "test": "node --test",
-    "test:unit": "node --test",
+    "test": "node --test tests/*.test.mjs .testmate/*.test.mjs",
+    "test:unit": "node --test tests/*.test.mjs .testmate/*.test.mjs",
     "testmate:targeted": "node .testmate/testmate.mjs tier-1-targeted",
     "testmate:integrity": "node .testmate/testmate.mjs tier-2-impact",
     "testmate:stability": "node .testmate/testmate.mjs tier-3-full",

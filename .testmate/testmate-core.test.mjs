@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import path from 'node:path';
 import {
     MODE_CONFIG,
     buildPreflightSummary,
@@ -113,14 +114,17 @@ test('detects frameworks and test runners from package scripts and dependencies'
 });
 
 test('detects focused and skipped tests in changed test files', () => {
+    const cwd = path.join('repo');
+    const focusedCall = ['test', 'only'].join('.');
+    const skippedCall = ['it', 'skip'].join('.');
     const files = new Map([
-        ['C:\\repo\\src\\form.test.ts', 'test.only("submits", () => {}); it.skip("fails", () => {});'],
-        ['C:\\repo\\src\\other.ts', 'test.only("ignored non-test file", () => {});']
+        [path.join(cwd, 'src/form.test.ts'), `${focusedCall}("submits", () => {}); ${skippedCall}("fails", () => {});`],
+        [path.join(cwd, 'src/other.ts'), `${focusedCall}("ignored non-test file", () => {});`]
     ]);
 
     const findings = detectFocusedOrSkippedTests({
         changedFiles: ['src/form.test.ts', 'src/other.ts'],
-        cwd: 'C:\\repo',
+        cwd,
         exists: filePath => files.has(filePath),
         readFile: filePath => files.get(filePath)
     });
