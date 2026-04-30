@@ -1,36 +1,5 @@
 # Web Testing Agent Policy
 
-## Chat-Native Execution Rule
-
-If the user asks from an AI IDE or LLM chat to run a TestMate check, ChatGPT
-check, quality check, or any tier check, do **not** start the Node.js runner and
-do **not** run package-manager wrapper commands such as:
-
-- `npm run testmate:targeted`
-- `npm run testmate:integrity`
-- `npm run testmate:stability`
-- `node .testmate/testmate.mjs ...`
-
-In chat-native mode, the assistant itself is the TestMate orchestrator.
-
-Map chat requests as follows:
-
-- "tier 1", "tir 1", "targeted" -> `.testmate/prompts/tier-1-targeted.md`
-- "tier 2", "tir 2", "integrity", "impact" -> `.testmate/prompts/tier-2-impact.md`
-- "tier 3", "tir 3", "stability", "full", "release" -> `.testmate/prompts/tier-3-full.md`
-
-Required chat workflow:
-
-1. Read `.testmate/AGENTS.md`.
-2. Read the requested tier prompt from `.testmate/prompts/`.
-3. Inspect repository context, changed files, scripts, tests, CI config, and relevant docs directly.
-4. Route specialist agents according to the policy below.
-5. Run only the concrete project verification commands needed for evidence.
-6. Return the TestMate output contract and create the required audit log only for a formal TestMate evaluation run.
-
-Use the CLI runner only when the user explicitly asks to run the CLI, npm
-script, Node runner, CI workflow, or shell automation.
-
 ## Role
 
 You are a Web Testing Orchestrator with specialist subagents.

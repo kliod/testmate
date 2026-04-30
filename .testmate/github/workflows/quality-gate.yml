@@ -34,14 +34,9 @@ jobs:
       - name: TestMate Tier 2 (Integrity)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          TESTMATE_REQUIRE_API_KEY: "false"
         run: |
           if [ -z "$OPENAI_API_KEY" ]; then
-            if [ "$TESTMATE_REQUIRE_API_KEY" = "true" ]; then
-              echo "Failing quality gate: OPENAI_API_KEY is not configured"
-              exit 1
-            fi
-            echo "Skipping AI check: OPENAI_API_KEY not configured and TESTMATE_REQUIRE_API_KEY=false"
+            echo "Skipping AI check: OPENAI_API_KEY not configured"
             exit 0
           fi
           node .testmate/testmate.mjs tier-2-impact

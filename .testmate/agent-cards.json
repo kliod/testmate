@@ -1,0 +1,275 @@
+{
+  "Change Impact Analyst": {
+    "trigger": "Any non-documentation or non-style-only code change.",
+    "requiredEvidence": [
+      "changed files",
+      "adjacent modules or dependencies",
+      "affected tests"
+    ],
+    "blockWhen": [
+      "the change type or affected areas cannot be determined with enough confidence"
+    ],
+    "needInfoWhen": [
+      "the intended product behavior cannot be inferred and blocks impact classification"
+    ],
+    "passGuidance": "Return PASS when impacted areas are clear and no hidden adjacency risk is found."
+  },
+  "Test Strategy Agent": {
+    "trigger": "Any routed change that requires a testing recommendation.",
+    "requiredEvidence": [
+      "risk level",
+      "changed behavior",
+      "available test layers",
+      "existing coverage"
+    ],
+    "blockWhen": [
+      "a high-risk change has no meaningful test path"
+    ],
+    "needInfoWhen": [
+      "product intent is unclear enough to prevent choosing the lowest reliable test layer"
+    ],
+    "passGuidance": "Prefer the smallest reliable test layer and avoid recommending broad E2E by default."
+  },
+  "Regression Auditor": {
+    "trigger": "Bug-fix signals, deleted tests, focused tests, skipped tests, or incident language.",
+    "requiredEvidence": [
+      "bug-fix indicators",
+      "test deletions",
+      "focused or skipped tests",
+      "regression coverage",
+      "waiver fields from .testmate/docs/waiver-policy.md when coverage is waived"
+    ],
+    "blockWhen": [
+      "bug fix lacks regression coverage or waiver",
+      "waiver lacks risk, reason, manualVerification, owner, followUp, or expiry",
+      "tests were deleted, skipped, or weakened without explanation"
+    ],
+    "needInfoWhen": [
+      "claimed waiver or regression expectation cannot be verified from the change"
+    ],
+    "passGuidance": "Return PASS when the regression path is covered or formally waived."
+  },
+  "Discovery Agent": {
+    "trigger": "Stack-defining config changed, scripts unavailable, or stack confidence is low.",
+    "requiredEvidence": [
+      "package scripts",
+      "config files",
+      "test framework indicators"
+    ],
+    "blockWhen": [],
+    "needInfoWhen": [
+      "the project stack cannot be determined well enough to recommend commands or coverage"
+    ],
+    "passGuidance": "Return PASS once the stack and test entrypoints are clear."
+  },
+  "Security Agent": {
+    "trigger": "Auth, permission, dependency, mutation, boundary, or critical journey risk.",
+    "requiredEvidence": [
+      "auth and permission code",
+      "network boundaries",
+      "dependency changes",
+      "sensitive user flows"
+    ],
+    "blockWhen": [
+      "access control changed without verification",
+      "sensitive behavior introduces unverified security risk"
+    ],
+    "needInfoWhen": [
+      "security expectations or allowed roles are missing and block a high-risk decision"
+    ],
+    "passGuidance": "Return PASS when no meaningful security regression signal is present."
+  },
+  "Auth & Permission Agent": {
+    "trigger": "Auth, roles, permissions, guards, 401, or 403 behavior changed.",
+    "requiredEvidence": [
+      "role matrix if present",
+      "allowed and denied flows",
+      "tests for role-based behavior"
+    ],
+    "blockWhen": [
+      "access-control behavior changed without role-based coverage"
+    ],
+    "needInfoWhen": [
+      "the expected role matrix cannot be inferred from code, tests, or docs"
+    ],
+    "passGuidance": "Do not block cosmetic login UI changes unless auth behavior changed."
+  },
+  "Form & Validation Agent": {
+    "trigger": "Form fields, validation, submit logic, or error handling changed.",
+    "requiredEvidence": [
+      "field changes",
+      "validation rules",
+      "submit success and failure states"
+    ],
+    "blockWhen": [
+      "form change lacks validation coverage"
+    ],
+    "needInfoWhen": [
+      "negative-path behavior or validation expectations are undefined"
+    ],
+    "passGuidance": "Return PASS when validation and submit behavior are covered at the right layer."
+  },
+  "Component Test Agent": {
+    "trigger": "Interactive UI behavior changed.",
+    "requiredEvidence": [
+      "user interactions",
+      "rendered states",
+      "behavioral assertions"
+    ],
+    "blockWhen": [
+      "interactive behavior changed without any reliable component-level verification path"
+    ],
+    "needInfoWhen": [
+      "expected UI behavior is ambiguous enough to block a reliable assertion strategy"
+    ],
+    "passGuidance": "Prefer behavior-oriented component coverage over implementation detail checks."
+  },
+  "Integration Test Agent": {
+    "trigger": "API, routing, data flow, mutation, or page-level behavior changed.",
+    "requiredEvidence": [
+      "success, error, loading, empty states",
+      "routing behavior",
+      "integration boundaries"
+    ],
+    "blockWhen": [
+      "critical integration behavior changed without meaningful success and failure coverage"
+    ],
+    "needInfoWhen": [
+      "external behavior or integration contracts are too unclear to verify"
+    ],
+    "passGuidance": "Return PASS when cross-layer behavior is already covered or clearly not at risk."
+  },
+  "API Mock & Contract Agent": {
+    "trigger": "API clients, schemas, fixtures, mocks, or handlers changed.",
+    "requiredEvidence": [
+      "API contract",
+      "mock alignment",
+      "success and error coverage"
+    ],
+    "blockWhen": [
+      "API mutation changed without matching success and error-path verification"
+    ],
+    "needInfoWhen": [
+      "contract expectations are missing and block verification"
+    ],
+    "passGuidance": "Return PASS when mocks and contract expectations remain aligned."
+  },
+  "Data Fetching & Cache Agent": {
+    "trigger": "Cache, query, refetch, optimistic update, or invalidation behavior changed.",
+    "requiredEvidence": [
+      "cache invalidation logic",
+      "loading and refetch states",
+      "rollback behavior"
+    ],
+    "blockWhen": [
+      "cache mutation behavior changed without verification of success, rollback, or refetch outcomes"
+    ],
+    "needInfoWhen": [
+      "expected cache semantics are unknown and block a reliable decision"
+    ],
+    "passGuidance": "Return PASS when data flow changes are covered and no stale-state risk remains."
+  },
+  "Accessibility Agent": {
+    "trigger": "Forms, dialogs, focus handling, navigation, or accessible interactive markup changed.",
+    "requiredEvidence": [
+      "labels",
+      "keyboard flow",
+      "focus behavior",
+      "semantic markup"
+    ],
+    "blockWhen": [
+      "critical interactive accessibility behavior regressed in a user-blocking way"
+    ],
+    "needInfoWhen": [
+      "expected accessible behavior for a critical flow cannot be inferred"
+    ],
+    "passGuidance": "Do not block on low-signal cosmetic markup changes."
+  },
+  "Visual Regression Agent": {
+    "trigger": "Shared UI, layout, responsive behavior, or design-system components changed.",
+    "requiredEvidence": [
+      "layout changes",
+      "responsive states",
+      "shared visual surfaces"
+    ],
+    "blockWhen": [
+      "shared visual behavior changed in a critical surface without any verification path"
+    ],
+    "needInfoWhen": [
+      "visual expectations for a critical shared surface are undefined"
+    ],
+    "passGuidance": "Return PASS for isolated internal style changes that do not affect shared or critical UI."
+  },
+  "E2E Test Agent": {
+    "trigger": "Critical user journey, auth flow, file upload, or multi-page flow changed.",
+    "requiredEvidence": [
+      "end-to-end user path",
+      "cross-page or cross-system behavior",
+      "critical outcomes"
+    ],
+    "blockWhen": [
+      "critical journey changed without reliable verification"
+    ],
+    "needInfoWhen": [
+      "the expected journey outcome is unclear and blocks release confidence"
+    ],
+    "passGuidance": "Use E2E only for critical or cross-boundary journeys."
+  },
+  "Flaky Test Investigator": {
+    "trigger": "Embedded CI logs or instability signals indicate flaky tests.",
+    "requiredEvidence": [
+      "test logs",
+      "repro clues",
+      "async or order-dependent behavior"
+    ],
+    "blockWhen": [
+      "the only available verification path is currently flaky for a critical change"
+    ],
+    "needInfoWhen": [
+      "the instability cannot be assessed because logs or rerun context are missing"
+    ],
+    "passGuidance": "Return PASS when there is no concrete instability evidence."
+  },
+  "Semantic Drift Analyst": {
+    "trigger": "Integrity or merge-oriented analysis tiers where adjacent behavior may drift.",
+    "requiredEvidence": [
+      "main-branch drift",
+      "changed assumptions",
+      "transitive behavior"
+    ],
+    "blockWhen": [
+      "recent drift from the base branch creates an unverified integration risk"
+    ],
+    "needInfoWhen": [
+      "the intended merged behavior cannot be inferred with enough confidence"
+    ],
+    "passGuidance": "Return PASS when base-branch drift does not materially change the decision."
+  },
+  "MR Quality Reporter": {
+    "trigger": "MR, merge, or release-oriented reporting modes.",
+    "requiredEvidence": [
+      "final decision",
+      "blockers and warnings",
+      "residual risks",
+      "recommended tests"
+    ],
+    "blockWhen": [],
+    "needInfoWhen": [],
+    "passGuidance": "Summarize the decision compactly without adding new findings."
+  },
+  "Performance Agent": {
+    "trigger": "Release-tier or explicit performance-sensitive change.",
+    "requiredEvidence": [
+      "performance-sensitive paths",
+      "heavy loops or synchronous work",
+      "critical rendering or data hot paths"
+    ],
+    "blockWhen": [
+      "release-critical performance behavior regressed without verification"
+    ],
+    "needInfoWhen": [
+      "performance expectations for a critical path are missing and block release confidence"
+    ],
+    "passGuidance": "Return PASS when no meaningful performance risk is visible in the scoped change."
+  }
+}

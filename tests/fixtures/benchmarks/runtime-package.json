@@ -1,0 +1,27 @@
+{
+  "name": "runtime-package",
+  "description": "Runtime/package changes should route through config-sensitive agents and benefit from slicing.",
+  "mode": "tier-2-impact",
+  "changedFiles": [
+    {
+      "status": "M",
+      "path": "package.json"
+    },
+    {
+      "status": "M",
+      "path": ".testmate/testmate.mjs"
+    },
+    {
+      "status": "M",
+      "path": "tests/cli-smoke.test.mjs"
+    }
+  ],
+  "repositoryFiles": [
+    "package.json",
+    ".testmate/testmate.mjs",
+    "tests/cli-smoke.test.mjs",
+    "tests/output-validation.test.mjs"
+  ],
+  "maxPromptDiffChars": 700,
+  "diff": "diff --git a/package.json b/package.json\nindex 1111111..2222222 100644\n--- a/package.json\n+++ b/package.json\n@@ -1,7 +1,8 @@\n {\n   \"name\": \"testmate\",\n+  \"description\": \"Runtime package benchmark\",\n   \"scripts\": {\n     \"test\": \"node --test\"\n   }\n }\n\ndiff --git a/.testmate/testmate.mjs b/.testmate/testmate.mjs\nindex 3333333..4444444 100644\n--- a/.testmate/testmate.mjs\n+++ b/.testmate/testmate.mjs\n@@ -100,3 +100,12 @@\n const value = 1;\n+const benchmarkFlag = true;\n+const benchmarkText = 'runtime benchmark';\n+const repeatedLine01 = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';\n+const repeatedLine02 = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';\n+const repeatedLine03 = 'cccccccccccccccccccccccccccccccccccccccccccccccccc';\n+const repeatedLine04 = 'dddddddddddddddddddddddddddddddddddddddddddddddddd';\n+const repeatedLine05 = 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';\n+const repeatedLine06 = 'ffffffffffffffffffffffffffffffffffffffffffffffffff';\n+const repeatedLine07 = 'gggggggggggggggggggggggggggggggggggggggggggggggggg';\n+const repeatedLine08 = 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh';\n+const repeatedLine09 = 'iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii';\n\ndiff --git a/tests/cli-smoke.test.mjs b/tests/cli-smoke.test.mjs\nindex 5555555..6666666 100644\n--- a/tests/cli-smoke.test.mjs\n+++ b/tests/cli-smoke.test.mjs\n@@ -1,3 +1,4 @@\n test('runtime package benchmark', () => {\n+  expect(true).toBe(true);\n });\n"
+}
