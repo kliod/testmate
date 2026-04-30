@@ -7,7 +7,7 @@
 
 import { createHash } from 'node:crypto';
 import { execSync, execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -1084,14 +1084,10 @@ function buildFreshPayload(context) {
 
 function readBenchmarkFixtures(fixturesPath) {
     const resolved = path.resolve(rootDir, fixturesPath);
-    const entries = execFileSync('powershell', [
-        '-NoProfile',
-        '-Command',
-        `Get-ChildItem -LiteralPath '${resolved.replace(/'/g, "''")}' -Filter *.json | Select-Object -ExpandProperty FullName`
-    ], { encoding: 'utf8' })
-        .split(/\r?\n/)
-        .map((line) => line.trim())
-        .filter(Boolean);
+    const entries = readdirSync(resolved, { withFileTypes: true })
+        .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
+        .map((entry) => path.join(resolved, entry.name))
+        .sort();
 
     return entries.map((filePath) => ({
         filePath,

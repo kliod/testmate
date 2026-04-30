@@ -199,6 +199,6 @@ test('sanitizes and falls back for invalid audit log paths', () => {
         new Date('2026-04-29T12:00:00.000Z')
     );
 
-    assert.equal(resolved, '.testmate\\logs\\pre_mr_2026-04-29T12-00-00.md');
+    assert.equal(resolved.replace(/\\/g, '/'), '.testmate/logs/pre_mr_2026-04-29T12-00-00.md');
     assert.throws(() => resolveAuditLogPath('.testmate/logs/custom.md', 'tier-2-impact'), /formal modes/);
 });
